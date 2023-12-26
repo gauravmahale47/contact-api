@@ -1,0 +1,54 @@
+# below code is for creating django app container with local mysql database connection
+# version: "3.1"
+# services:
+#   api:
+#     build: .
+#     container_name: contact-api
+#     command: python manage.py runserver 0.0.0.0:8000
+#     volumes:
+#       - .:/code
+#     ports:
+#       - "8000:8000"
+#     environment:
+#       - DB_HOST=docker.for.mac.localhost
+
+
+
+# below code is for creating django app container with mysql image container connection 
+version: '3'
+networks:
+  contact:
+    driver: bridge
+services:
+  db:
+    container_name: mysql
+    image: mysql
+    environment:
+      - MYSQL_DATABASE=contact
+      - MYSQL_PASSWORD=Albatros@47
+      - MYSQL_ROOT_PASSWORD=Albatros@47
+    networks:
+      - contact
+  web:
+    container_name: contact-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    volumes:
+      - .:/code
+    command: python3 manage.py runserver 0.0.0.0:8000
+    networks:
+      - contact
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=contact
+      - DB_USER=root
+      - DB_PASSWORD=Albatros@47
+
+  
+
